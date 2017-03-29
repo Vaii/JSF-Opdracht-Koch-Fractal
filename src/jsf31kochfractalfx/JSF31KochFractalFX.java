@@ -20,6 +20,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.util.concurrent.ExecutionException;
+
 /**
  *
  * @author Nico Kuijpers
@@ -57,7 +59,7 @@ public class JSF31KochFractalFX extends Application {
     private final int kpHeight = 500;
     
     @Override
-    public void start(Stage primaryStage) throws InterruptedException {
+    public void start(Stage primaryStage) throws InterruptedException, ExecutionException {
        
         // Define grid pane
         GridPane grid;
@@ -106,6 +108,8 @@ public class JSF31KochFractalFX extends Application {
                     increaseLevelButtonActionPerformed(event);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -120,6 +124,8 @@ public class JSF31KochFractalFX extends Application {
                 try {
                     decreaseLevelButtonActionPerformed(event);
                 } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
             }
@@ -225,7 +231,7 @@ public class JSF31KochFractalFX extends Application {
         });
     }
     
-    private void increaseLevelButtonActionPerformed(ActionEvent event) throws InterruptedException {
+    private void increaseLevelButtonActionPerformed(ActionEvent event) throws InterruptedException, ExecutionException {
         if (currentLevel < 12) {
             // resetZoom();
             currentLevel++;
@@ -234,7 +240,7 @@ public class JSF31KochFractalFX extends Application {
         }
     } 
     
-    private void decreaseLevelButtonActionPerformed(ActionEvent event) throws InterruptedException {
+    private void decreaseLevelButtonActionPerformed(ActionEvent event) throws InterruptedException, ExecutionException {
         if (currentLevel > 1) {
             // resetZoom();
             currentLevel--;

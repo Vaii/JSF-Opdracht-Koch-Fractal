@@ -2,6 +2,7 @@ package calculate;
 
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.Callable;
 
 /**
  * Created by Vai on 3/22/17.
@@ -36,4 +37,5 @@ public class RunnableEdge implements Runnable, Observer {
     public void update(Observable o, Object arg) {
         kochManager.edges.add((Edge)arg);
     }
+
 }

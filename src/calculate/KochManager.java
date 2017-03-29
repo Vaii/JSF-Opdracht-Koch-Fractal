@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
-import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.*;
 
 public class KochManager {
 
@@ -18,20 +17,22 @@ public class KochManager {
     public List<Edge> edges = Collections.synchronizedList(new ArrayList<>());
     private TimeStamp ts = new TimeStamp();
     public int count = 0;
-    RunnableEdge left = new RunnableEdge("left", this);
-    RunnableEdge right = new RunnableEdge("Right", this);
-    RunnableEdge bottom = new RunnableEdge("Bottom", this);
+    ExecutorService pool = Executors.newFixedThreadPool(3);
+    CallableEdge left = new CallableEdge(1);
+    CallableEdge right = new CallableEdge(2);
+    CallableEdge bottom = new CallableEdge(0);
+
 
 
     public KochManager(JSF31KochFractalFX application) {
         this.application = application;
-        right.k.addObserver(right);
         left.k.addObserver(left);
+        right.k.addObserver(right);
         bottom.k.addObserver(bottom);
 
     }
 
-    public void changeLevel(int nxt) throws InterruptedException {
+    public void changeLevel(int nxt) throws InterruptedException, ExecutionException {
         edges.clear();
         ts.init();
         ts.setBegin("Begin");
@@ -40,23 +41,23 @@ public class KochManager {
         right.k.setLevel(nxt);
         bottom.k.setLevel(nxt);
 
-        Thread t1 = new Thread(left);
-        Thread t2 = new Thread(right);
-        Thread t3 = new Thread(bottom);
+        try{
 
-        t1.setName("Left");
-        t2.setName("Right");
-        t3.setName("Bottom");
+        Future<ArrayList<Edge>> futLeft = pool.submit(left);
+        Future<ArrayList<Edge>> futRight = pool.submit(right);
+        Future<ArrayList<Edge>> futBottom = pool.submit(bottom);
 
-        t1.start();
-        t2.start();
-        t3.start();
 
-        t1.join();
-        t2.join();
-        t3.join();
+            edges.addAll(futLeft.get());
+            edges.addAll(futRight.get());
+            edges.addAll(futBottom.get());
+        }
 
-        System.out.println(this.count);
+        catch(ExecutionException e){
+            System.out.println(e.getMessage().toString());
+        }
+
+
 
         ts.setEnd("Eind");
 
