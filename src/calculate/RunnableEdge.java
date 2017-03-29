@@ -7,7 +7,15 @@ import java.util.Observer;
  * Created by Vai on 3/22/17.
  */
 public class RunnableEdge implements Runnable, Observer {
-    String edgeName;
+    public String getEdgeName() {
+        return edgeName;
+    }
+
+    public void setEdgeName(String edgeName) {
+        this.edgeName = edgeName;
+    }
+
+    private String edgeName;
     KochFractal k;
     KochManager kochManager;
 
@@ -15,25 +23,43 @@ public class RunnableEdge implements Runnable, Observer {
         this.edgeName = edgeName;
         k = new KochFractal();
         this.kochManager = kochManager;
+        k.addObserver(this);
     }
     @Override
     public void run() {
         if(edgeName.equalsIgnoreCase("left")){
             k.generateLeftEdge();
-            kochManager.count++;
+            if(kochManager.getCount() == 2){
+                kochManager.getApplication().requestDrawEdges();
+            }
+            else{
+                kochManager.finished();
+            }
+
+
         }
         else if(edgeName.equalsIgnoreCase("bottom")){
             k.generateBottomEdge();
-            kochManager.count++;
+            if(kochManager.getCount() == 2 ){
+                kochManager.getApplication().requestDrawEdges();
+            }
+            else{
+                kochManager.finished();
+            }
         }
         else if(edgeName.equalsIgnoreCase("right")){
             k.generateRightEdge();
-            kochManager.count++;
+            if(kochManager.getCount() == 2 ){
+                kochManager.getApplication().requestDrawEdges();
+            }
+            else{
+                kochManager.finished();
+            }
         }
     }
 
     @Override
     public void update(Observable o, Object arg) {
-        kochManager.edges.add((Edge)arg);
+        kochManager.addEdges((Edge)arg);
     }
 }

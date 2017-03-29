@@ -14,25 +14,49 @@ import java.util.concurrent.FutureTask;
 
 public class KochManager {
 
+    public JSF31KochFractalFX getApplication() {
+        return application;
+    }
+
+    public void setApplication(JSF31KochFractalFX application) {
+        this.application = application;
+    }
+
     private JSF31KochFractalFX application;
-    public List<Edge> edges = Collections.synchronizedList(new ArrayList<>());
+    private ArrayList<Edge> edges = new ArrayList<>();
     private TimeStamp ts = new TimeStamp();
-    public int count = 0;
+    private int count = 0;
     RunnableEdge left = new RunnableEdge("left", this);
     RunnableEdge right = new RunnableEdge("Right", this);
     RunnableEdge bottom = new RunnableEdge("Bottom", this);
 
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public ArrayList<Edge> getEdges() {
+        return edges;
+    }
+
+    public void setEdges(ArrayList<Edge> edges) {
+        this.edges = edges;
+    }
+
+    public synchronized void addEdges(Edge e){
+        edges.add(e);
+    }
 
     public KochManager(JSF31KochFractalFX application) {
         this.application = application;
-        right.k.addObserver(right);
-        left.k.addObserver(left);
-        bottom.k.addObserver(bottom);
-
     }
 
     public void changeLevel(int nxt) throws InterruptedException {
         edges.clear();
+        setCount(0);
         ts.init();
         ts.setBegin("Begin");
 
@@ -44,25 +68,18 @@ public class KochManager {
         Thread t2 = new Thread(right);
         Thread t3 = new Thread(bottom);
 
-        t1.setName("Left");
-        t2.setName("Right");
-        t3.setName("Bottom");
+        t1.setName(left.getEdgeName());
+        t2.setName(right.getEdgeName());
+        t3.setName(bottom.getEdgeName());
 
         t1.start();
         t2.start();
         t3.start();
 
-        t1.join();
-        t2.join();
-        t3.join();
-
-        System.out.println(this.count);
-
         ts.setEnd("Eind");
 
         application.setTextCalc(ts.toString());
 
-        application.requestDrawEdges();
 
     }
 
@@ -80,6 +97,10 @@ public class KochManager {
         ts.setEnd();
         application.setTextDraw(ts.toString());
 
+    }
+
+    public synchronized void finished(){
+        count++;
     }
 
 }
