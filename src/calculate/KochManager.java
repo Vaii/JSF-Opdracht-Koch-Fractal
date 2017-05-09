@@ -96,12 +96,17 @@ public class KochManager {
         Thread thRight = new Thread(taskRight);
         Thread thBottom = new Thread(taskBottom);
 
+        tsReken.init();
+        tsReken.setBegin("StartReken");
         pool.submit(thLeft);
         pool.submit(thRight);
         pool.submit(thBottom);
     }
 
     public void drawEdges() {
+
+        tsReken.setEnd("EindReken");
+        application.setTextCalc(tsReken.toString());
 
         application.setTextCalc(tsReken.toString());
 
@@ -140,6 +145,8 @@ public class KochManager {
 
     public void createAllTasks(){
 
+
+        tsReken.init();
         if(taskLeft != null){
             application.getLeftProgress().progressProperty().unbind();
             application.getProgressNrEdgesLeft().textProperty().unbind();
