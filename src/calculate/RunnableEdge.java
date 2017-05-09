@@ -16,8 +16,8 @@ public class RunnableEdge implements Runnable, Observer {
     }
 
     private String edgeName;
-    KochFractal k;
-    KochManager kochManager;
+    private KochFractal k;
+    private KochManager kochManager;
 
     public RunnableEdge(String edgeName, KochManager kochManager){
         this.edgeName = edgeName;
@@ -33,7 +33,7 @@ public class RunnableEdge implements Runnable, Observer {
                 kochManager.getApplication().requestDrawEdges();
             }
             else{
-                kochManager.finished();
+               // kochManager.finished();
             }
 
 
@@ -44,7 +44,7 @@ public class RunnableEdge implements Runnable, Observer {
                 kochManager.getApplication().requestDrawEdges();
             }
             else{
-                kochManager.finished();
+              //  kochManager.finished();
             }
         }
         else if(edgeName.equalsIgnoreCase("right")){
@@ -53,7 +53,7 @@ public class RunnableEdge implements Runnable, Observer {
                 kochManager.getApplication().requestDrawEdges();
             }
             else{
-                kochManager.finished();
+                // kochManager.finished();
             }
         }
     }

@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -50,6 +51,42 @@ public class JSF31KochFractalFX extends Application {
     private Label labelCalcText;
     private Label labelDraw;
     private Label labelDrawText;
+    private Label progressLeft;
+    private Label progressBottom;
+    private Label progressRight;
+
+    public Label getProgressNrEdgesLeft() {
+        return progressNrEdgesLeft;
+    }
+
+    public Label getProgressNrEdgesRight() {
+        return progressNrEdgesRight;
+    }
+
+    public Label getProgressNrEdgesBottom() {
+        return progressNrEdgesBottom;
+    }
+
+    private Label progressNrEdgesLeft;
+    private Label progressNrEdgesRight;
+    private Label progressNrEdgesBottom;
+
+    public ProgressBar getBottomProgress() {
+        return bottomProgress;
+    }
+
+    public ProgressBar getLeftProgress() {
+        return leftProgress;
+    }
+
+    public ProgressBar getRightProgress() {
+        return rightProgress;
+    }
+
+    // Progressbars to show drawing progress
+    private ProgressBar bottomProgress;
+    private ProgressBar leftProgress;
+    private ProgressBar rightProgress;
     
     // Koch panel and its size
     private Canvas kochPanel;
@@ -79,7 +116,27 @@ public class JSF31KochFractalFX extends Application {
         labelNrEdgesText = new Label();
         grid.add(labelNrEdges, 0, 0, 4, 1);
         grid.add(labelNrEdgesText, 3, 0, 22, 1);
-        
+
+        // Labels & ProgressBars to differentiate progressbars
+        progressBottom = new Label("Bottom:");
+        grid.add(progressBottom, 0, 7);
+        bottomProgress = new ProgressBar();
+        grid.add(bottomProgress, 1, 7);
+        progressLeft = new Label("Left:");
+        grid.add(progressLeft, 2,7);
+        leftProgress = new ProgressBar();
+        grid.add(leftProgress, 3,7);
+        progressRight = new Label("Right:");
+        grid.add(progressRight, 4,7);
+        rightProgress = new ProgressBar();
+        grid.add(rightProgress, 5, 7);
+        progressNrEdgesBottom = new Label("Nr:");
+        progressNrEdgesLeft = new Label("Nr:");
+        progressNrEdgesRight = new Label("Nr:");
+        grid.add(progressNrEdgesBottom, 1, 8);
+        grid.add(progressNrEdgesLeft, 3,8);
+        grid.add(progressNrEdgesRight, 5, 8);
+
         // Labels to present time of calculation for Koch fractal
         labelCalc = new Label("Calculating:");
         labelCalcText = new Label();
@@ -165,7 +222,7 @@ public class JSF31KochFractalFX extends Application {
         
         // Create the scene and add the grid pane
         Group root = new Group();
-        Scene scene = new Scene(root, kpWidth+50, kpHeight+170);
+        Scene scene = new Scene(root, kpWidth+50, kpHeight+370);
         root.getChildren().add(grid);
         
         // Define title and assign the scene for main window
@@ -179,6 +236,26 @@ public class JSF31KochFractalFX extends Application {
         gc.clearRect(0.0,0.0,kpWidth,kpHeight);
         gc.setFill(Color.BLACK);
         gc.fillRect(0.0,0.0,kpWidth,kpHeight);
+    }
+
+    public void drawWhiteEdge(Edge e){
+        GraphicsContext gc = kochPanel.getGraphicsContext2D();
+
+        Edge e1 = edgeAfterZoomAndDrag(e);
+
+        gc.setStroke(Color.WHITE);
+
+        if(currentLevel <= 3){
+            gc.setLineWidth(2.0);
+        }
+        else if(currentLevel <= 5){
+            gc.setLineWidth(1.5);
+        }
+        else{
+            gc.setLineWidth(1);
+        }
+
+        gc.strokeLine(e1.X1, e1.Y1, e1.X2, e1.Y2);
     }
     
     public void drawEdge(Edge e) {

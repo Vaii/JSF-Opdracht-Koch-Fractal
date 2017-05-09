@@ -2,6 +2,7 @@ package calculate;
 
 import com.company.Observer;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import jsf31kochfractalfx.JSF31KochFractalFX;
 import timeutil.TimeStamp;
 
@@ -9,8 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
-import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.*;
 
 public class KochManager {
 
@@ -24,11 +24,26 @@ public class KochManager {
 
     private JSF31KochFractalFX application;
     private ArrayList<Edge> edges = new ArrayList<>();
-    private TimeStamp ts = new TimeStamp();
+
+    public TimeStamp getTsReken() {
+        return tsReken;
+    }
+
+    public void setTsReken(TimeStamp tsReken) {
+        this.tsReken = tsReken;
+    }
+
+    private TimeStamp tsReken = new TimeStamp();
+    private TimeStamp tsTeken = new TimeStamp();
     private int count = 0;
-    RunnableEdge left = new RunnableEdge("left", this);
-    RunnableEdge right = new RunnableEdge("Right", this);
-    RunnableEdge bottom = new RunnableEdge("Bottom", this);
+    private ExecutorService pool = Executors.newFixedThreadPool(3);
+    private KochFractal koch;
+
+    //three edge tasks
+    private Task taskLeft = null;
+    private Task taskBottom = null;
+    private Task taskRight = null;
+
 
     public int getCount() {
         return count;
@@ -52,55 +67,107 @@ public class KochManager {
 
     public KochManager(JSF31KochFractalFX application) {
         this.application = application;
+        this.koch = new KochFractal();
+
     }
+
+    public int getLevel(){
+        return koch.getLevel();
+    }
+
 
     public void changeLevel(int nxt) throws InterruptedException {
         edges.clear();
-        setCount(0);
-        ts.init();
-        ts.setBegin("Begin");
+        koch.setLevel(nxt);
 
-        left.k.setLevel(nxt);
-        right.k.setLevel(nxt);
-        bottom.k.setLevel(nxt);
+        if(taskLeft != null && taskRight != null && taskBottom != null ){
+            taskRight.cancel();
+            taskBottom.cancel();
+            taskLeft.cancel();
+        }
 
-        Thread t1 = new Thread(left);
-        Thread t2 = new Thread(right);
-        Thread t3 = new Thread(bottom);
+        createAllTasks();
+        startTasks();
+    }
 
-        t1.setName(left.getEdgeName());
-        t2.setName(right.getEdgeName());
-        t3.setName(bottom.getEdgeName());
+    public void startTasks(){
 
-        t1.start();
-        t2.start();
-        t3.start();
+        Thread thLeft = new Thread(taskLeft);
+        Thread thRight = new Thread(taskRight);
+        Thread thBottom = new Thread(taskBottom);
 
-        ts.setEnd("Eind");
-
-        application.setTextCalc(ts.toString());
-
-
+        pool.submit(thLeft);
+        pool.submit(thRight);
+        pool.submit(thBottom);
     }
 
     public void drawEdges() {
-        ts.init();
-        application.clearKochPanel();
-        application.setTextNrEdges(Integer.toString(left.k.getNrOfEdges()));
 
-        ts.setBegin();
+        application.setTextCalc(tsReken.toString());
+
+        tsTeken.init();
+        application.clearKochPanel();
+        application.setTextNrEdges(Integer.toString(koch.getNrOfEdges()));
+
+        tsTeken.setBegin("Begin");
 
         for(Edge x : edges){
                 application.drawEdge(x);
         }
 
-        ts.setEnd();
-        application.setTextDraw(ts.toString());
+        tsTeken.setEnd("Eind");
+        application.setTextDraw(tsTeken.toString());
 
     }
 
-    public synchronized void finished(){
+    public void drawEdge(Edge e){
+        application.drawWhiteEdge(e);
+    }
+
+    public synchronized void addEdge(Edge e){
+        edges.add(e);
+    }
+
+    public synchronized void finished() throws ExecutionException, InterruptedException {
+
         count++;
+
+        if(count >= 3){
+            application.requestDrawEdges();
+            setCount(0);
+        }
+    }
+
+    public void createAllTasks(){
+
+        if(taskLeft != null){
+            application.getLeftProgress().progressProperty().unbind();
+            application.getProgressNrEdgesLeft().textProperty().unbind();
+        }
+        if(taskRight != null){
+            application.getRightProgress().progressProperty().unbind();
+            application.getProgressNrEdgesRight().textProperty().unbind();
+        }
+        if(taskBottom != null){
+            application.getBottomProgress().progressProperty().unbind();
+            application.getProgressNrEdgesBottom().textProperty().unbind();
+        }
+
+        taskLeft = new CalculateTask("Left", this);
+        taskRight = new CalculateTask("Right", this);
+        taskBottom = new CalculateTask("Bottom", this);
+
+        application.getLeftProgress().setProgress(0);
+        application.getLeftProgress().progressProperty().bind(taskLeft.progressProperty());
+        application.getProgressNrEdgesLeft().textProperty().bind(taskLeft.messageProperty());
+
+        application.getRightProgress().setProgress(0);
+        application.getRightProgress().progressProperty().bind(taskRight.progressProperty());
+        application.getProgressNrEdgesRight().textProperty().bind(taskRight.messageProperty());
+
+        application.getBottomProgress().setProgress(0);
+        application.getBottomProgress().progressProperty().bind(taskBottom.progressProperty());
+        application.getProgressNrEdgesBottom().textProperty().bind(taskBottom.messageProperty());
     }
 
 }
