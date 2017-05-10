@@ -3,6 +3,7 @@ package com.company;/*
  * and open the template in the editor.
  */
 
+import java.io.Serializable;
 import java.util.Observable;
 import javafx.scene.paint.Color;
 
@@ -10,7 +11,7 @@ import javafx.scene.paint.Color;
  *
  * @author Peter Boots
  */
-public class KochFractal extends Observable {
+public class KochFractal extends Observable implements Serializable {
 
     private int level = 1;      // The current level of the fractal
     private int nrOfEdges = 3;  // The number of edges in the current level of the fractal
