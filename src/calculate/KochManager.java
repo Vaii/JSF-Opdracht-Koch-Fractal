@@ -104,11 +104,9 @@ public class KochManager {
     }
 
     public void drawEdges() {
-
-        tsReken.setEnd("EindReken");
+        
         application.setTextCalc(tsReken.toString());
 
-        application.setTextCalc(tsReken.toString());
 
         tsTeken.init();
         application.clearKochPanel();
@@ -138,6 +136,7 @@ public class KochManager {
         count++;
 
         if(count >= 3){
+            tsReken.setEnd("Eind");
             application.requestDrawEdges();
             setCount(0);
         }
