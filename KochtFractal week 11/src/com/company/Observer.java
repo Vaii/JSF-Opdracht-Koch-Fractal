@@ -17,4 +17,5 @@ public class Observer implements java.util.Observer {
         System.out.println("Edge1" +e.X1+ " "+ e.Y1 +" "+ e.X2+" " +e.Y2);
 
     }
+
 }

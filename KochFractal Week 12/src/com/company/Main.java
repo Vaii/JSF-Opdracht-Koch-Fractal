@@ -10,21 +10,23 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 	// write your code here
+        Writer writer = new Writer();
+        KochFractal koch = new KochFractal();
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Welk level?");
         int level = scanner.nextInt();
 
-        KochFractal koch = new KochFractal();
+        koch.addObserver(writer);
         koch.setLevel(level);
 
         koch.generateBottomEdge();
         koch.generateLeftEdge();
         koch.generateRightEdge();
 
-        FileOutputStream fos = new FileOutputStream("kochfr.ser");
-        ObjectOutputStream ous = new ObjectOutputStream(fos);
-        ous.writeObject(koch);
-
+        // writer.write();
+         writer.writeText();
+        // writer.writeWithBuffer();
+        // writer.writeTextWithBuffer();
     }
 }
