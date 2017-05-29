@@ -24,8 +24,8 @@ public class Main {
         koch.generateLeftEdge();
         koch.generateRightEdge();
 
-        // writer.write();
-         writer.writeText();
+         writer.write();
+        // writer.writeText();
         // writer.writeWithBuffer();
         // writer.writeTextWithBuffer();
     }

@@ -75,6 +75,7 @@ public class Reader {
 
     public void readTextFileWithBuffer(File file) throws FileNotFoundException {
         ts = new TimeStamp();
+        ts.init();
         Scanner scanner = new Scanner( new BufferedReader(new FileReader(file)));
         try{
             ts.setBegin("start Read Text with buffer");
@@ -83,10 +84,10 @@ public class Reader {
                 Edge e = new Edge(Double.parseDouble(edgeinfo[0]), Double.parseDouble(edgeinfo[1]), Double.parseDouble(edgeinfo[2]), Double.parseDouble(edgeinfo[3]), Color.web(edgeinfo[4]));
                 edges2.add(e);
             }
-            ts.setEnd("end Read Text with buffer");
-            System.out.println(ts.toString());
         }
         catch (NoSuchElementException e){
+            ts.setEnd("end Read Text with buffer");
+            System.out.println("-->" + ts.toString());
             System.out.println(e.getMessage());
         }
     }
