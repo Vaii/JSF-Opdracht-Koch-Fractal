@@ -24,7 +24,8 @@ public class Main {
         koch.generateLeftEdge();
         koch.generateRightEdge();
 
-         writer.write();
+        writer.writeToMappedFile();
+        // writer.write();
         // writer.writeText();
         // writer.writeWithBuffer();
         // writer.writeTextWithBuffer();

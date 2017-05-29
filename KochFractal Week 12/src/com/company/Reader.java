@@ -4,6 +4,8 @@ import javafx.scene.paint.Color;
 import timeutil.TimeStamp;
 
 import java.io.*;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.security.Timestamp;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -89,6 +91,19 @@ public class Reader {
             ts.setEnd("end Read Text with buffer");
             System.out.println("-->" + ts.toString());
             System.out.println(e.getMessage());
+        }
+    }
+
+    public void readMappedBinary(File file) throws IOException {
+        FileChannel fc;
+        fc = new RandomAccessFile(file,"r").getChannel();
+        MappedByteBuffer in;
+        in = fc.map(FileChannel.MapMode.READ_ONLY,0,fc.size());
+
+        while(in.hasRemaining()){
+
+            Edge e = new Edge(in.getDouble(),in.getDouble(),in.getDouble(),in.getDouble(),Color.color(in.getDouble(),in.getDouble(),in.getDouble()));
+            edges2.add(e);
         }
     }
 }

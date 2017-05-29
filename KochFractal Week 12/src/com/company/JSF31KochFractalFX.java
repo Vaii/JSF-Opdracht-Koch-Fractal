@@ -225,7 +225,8 @@ public class JSF31KochFractalFX extends Application {
             filechooser.setTitle("Choose file");
 
              File file = filechooser.showOpenDialog(((Node) event.getSource()).getScene().getWindow());
-             reader.readFile(file);
+             reader.readMappedBinary(file);
+             //reader.readFile(file);
              //reader.readFileWithBuffer(file);
 
              requestDrawEdges();

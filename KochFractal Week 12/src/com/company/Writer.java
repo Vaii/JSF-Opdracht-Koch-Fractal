@@ -3,6 +3,8 @@ package com.company;
 import timeutil.TimeStamp;
 
 import java.io.*;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -72,6 +74,24 @@ public class Writer implements Observer {
         }
         ts.setEnd("end write text with buffer");
         System.out.println(ts.toString());
+    }
+
+    public void writeToMappedFile() throws IOException {
+        RandomAccessFile ras;
+        ras = new RandomAccessFile("mappedkochfr.ser","rw");
+        FileChannel fc = ras.getChannel();
+        MappedByteBuffer out;
+        out = fc.map(FileChannel.MapMode.READ_WRITE,0,8*7*Edges.size());
+
+        for(Edge e : Edges){
+            out.putDouble(e.X1);
+            out.putDouble(e.Y1);
+            out.putDouble(e.X2);
+            out.putDouble(e.Y2);
+            out.putDouble(e.color.getRed());
+            out.putDouble(e.color.getGreen());
+            out.putDouble(e.color.getBlue());
+        }
     }
 
     @Override
